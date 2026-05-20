@@ -34,3 +34,4 @@ build/
 
 .env
 *.pem
+src/main/resources/certs/*.pem

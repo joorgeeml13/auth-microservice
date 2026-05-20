@@ -1,3 +1,29 @@
 spring:
   application:
     name: auth-microservice
+  datasource:
+    url: ${DB_URL}
+    username: ${PG_USER}
+    password: ${PG_PASS}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate 
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+security:
+    jwt:
+      refresh-cookie-name: "refresh_token"
+      refresh-expiration-days: 7
+      refresh-cookie.secure: false
+      refresh-path: /api/v1/auth/refresh
+server:
+  port: 8081
+  servlet:
+    context-path: /api/v1

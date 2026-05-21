@@ -1,0 +1,7 @@
+target/
+.git/
+.idea/
+.vscode/
+*.env
+*.log
+src/main/resources/certs/*.pem

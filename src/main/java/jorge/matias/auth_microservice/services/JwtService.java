@@ -24,10 +24,10 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     
-    @Value("classpath:certs/private_key.pem")
+    @Value("${JWT_PRIVATE_KEY_PATH:classpath:certs/private_key.pem}")
     private Resource privateKeyResource;
 
-    @Value("classpath:certs/public_key.pem")
+    @Value("${JWT_PUBLIC_KEY_PATH:classpath:certs/public_key.pem}")
     private Resource publicKeyResource;
 
     private PrivateKey privateKey;

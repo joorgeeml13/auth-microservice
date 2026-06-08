@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jorge.matias.auth_microservice.dto.response.ApiErrorResponse;
 import jorge.matias.auth_microservice.exceptions.AuthException;
+import lombok.Locked;
 import lombok.RequiredArgsConstructor;
 
 @RestControllerAdvice
@@ -60,6 +65,28 @@ public class GlobalExceptionHandler {
             .collect(Collectors.joining(" | "));
 
             return buildResponse(HttpStatus.BAD_REQUEST, Constantes.VALIDATION_ERROR_CODE, errors, request);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity handleSpringSecurityAuthException(
+        AuthenticationException ex,
+        HttpServletRequest request
+    ){
+        String messageKey = "auth.error.invalid_credentials";
+
+        if(ex instanceof DisabledException)
+            messageKey = "auth.error.account_disabled";
+        else if (ex instanceof LockedException)
+            messageKey = "auth.error.account_locked";
+
+        String translatedMessage = messageSource.getMessage(
+            messageKey,
+            null,
+            "Bad Credentials",
+            LocaleContextHolder.getLocale()
+        );
+
+        return buildResponse(HttpStatus.UNAUTHORIZED, Constantes.AUTH_ERROR_CODE, translatedMessage, request);
     }
 
     private ResponseEntity<ApiErrorResponse> buildResponse(

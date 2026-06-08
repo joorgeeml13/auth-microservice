@@ -15,7 +15,6 @@ import jorge.matias.auth_microservice.dto.response.AuthResponse;
 import jorge.matias.auth_microservice.exceptions.RefreshTokenNotFoundException;
 import jorge.matias.auth_microservice.services.AuthService;
 import jorge.matias.auth_microservice.vo.TokenPair;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;

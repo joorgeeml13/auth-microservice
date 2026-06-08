@@ -30,24 +30,33 @@ public class JwtService {
     @Value("${JWT_PUBLIC_KEY_PATH:classpath:certs/public_key.pem}")
     private Resource publicKeyResource;
 
+    @Value("${security.jwt.access-expiration-mins:15}")
+    private long jwtExpirationMins;
+
+    @Value("${security.jwt.refresh-expiration-days:7}")
+    private long refreshExpirationDays;
+
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
-    private static final long JWT_EXPIRATION = 1000 * 60 * 15; // 15 mins
-    private static final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 días
+    private long jwtExpirationMillis;
+    private long refreshExpirationMillis;
 
     @PostConstruct
     protected void init() throws Exception {
         this.privateKey = loadPrivateKey(privateKeyResource);
         this.publicKey = loadPublicKey(publicKeyResource);
+
+        this.jwtExpirationMillis = jwtExpirationMins * 60 * 1000;
+        this.refreshExpirationMillis = refreshExpirationDays * 24 * 60 * 60 * 1000;
     }
 
     public String generateToken(UserDetails userDetails) {
-        return buildToken(Map.of(), userDetails, JWT_EXPIRATION);
+        return buildToken(Map.of(), userDetails, jwtExpirationMins);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(Map.of(), userDetails, REFRESH_EXPIRATION);
+        return buildToken(Map.of(), userDetails, refreshExpirationDays);
     }
     
     public String extractSubject(String token) {

@@ -62,7 +62,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(
         @RequestBody @Valid LoginRequest request,
         @RequestHeader(value = "X-Client-Type", defaultValue = "WEB") String clientType,
-        @RequestHeader(value = "X-Device-ID", defaultValue = "web-browser") String deviceId,
+        @RequestHeader(value = "X-Device-ID", required = true) String deviceId,
         HttpServletResponse response
     ) {
 

@@ -62,6 +62,7 @@ public class LogInTests extends AbstractIntegrationTest{
             .contextPath(contextPath)
             .with(csrf())
             .header("X-Client-Type", "WEB")
+            .header("X-Device-ID", "test-device-uuid-1234")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
             .andExpect(status().isOk())
@@ -81,11 +82,28 @@ public class LogInTests extends AbstractIntegrationTest{
                 .contextPath(contextPath)
                 .with(csrf())
                 .header("X-Client-Type", "MOBILE")
+                .header("X-Device-ID", "test-device-uuid-5678")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.refreshToken").isNotEmpty())
                 .andExpect(cookie().doesNotExist("refresh_token"));
+    }
+
+    @Test
+    void invalidLoginMissingDeviceId() throws Exception {
+        String json = """
+            {"email":"test@test.com","password":"Password123!"}
+            """;
+        
+        mockMvc.perform(post(contextPath + "/auth/login")
+                .contextPath(contextPath)
+                .with(csrf())
+                .header("X-Client-Type", "WEB")
+                // NO mandamos el X-Device-ID aposta
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest());
     }
 }

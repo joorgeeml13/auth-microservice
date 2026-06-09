@@ -1,8 +1,10 @@
 package jorge.matias.auth_microservice.config;
 
 import java.net.Authenticator;
+import java.util.Locale;
 import java.util.UUID;
 
+import org.apache.tomcat.util.descriptor.LocalResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 
 import jorge.matias.auth_microservice.model.auth.AccountPrincipal;
 import jorge.matias.auth_microservice.model.entity.Account;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
+    private final LocalResolver loacaLocalResolver;
     private final AccountRepository accountRepository;
 
     @Bean
@@ -66,5 +70,10 @@ public class ApplicationConfig {
         return config.getAuthenticationManager();
     }
 
-    // TODO: 1 - Configurar bean AcceptHEaderLoacaleResolver. Para aceptar idioma del header Accept-Language
+    @Bean
+    public LocalResolver loacaLocalResolver(){
+        AcceptHeaderLocaleContextResolver localeResolver = new AcceptHeaderLocaleContextResolver();
+        localeResolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        return loacaLocalResolver;
+    }
 }

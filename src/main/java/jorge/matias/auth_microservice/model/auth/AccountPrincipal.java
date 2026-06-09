@@ -19,8 +19,10 @@ public class AccountPrincipal implements UserDetails {
     private static final long serialVersionUID = 1L;
     
     private final Account principal;
-     private final Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
     
+
+    // TODO: 5 - Refactirizare y usar permisos especificos (users:write)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

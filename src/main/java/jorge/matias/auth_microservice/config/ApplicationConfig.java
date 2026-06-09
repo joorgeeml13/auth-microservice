@@ -65,4 +65,6 @@ public class ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    // TODO: 1 - Configurar bean AcceptHEaderLoacaleResolver. Para aceptar idioma del header Accept-Language
 }

@@ -27,6 +27,8 @@ public class SecurityConfig {
     @Value("${cors.allowed-origins:http://localhost:3000}")
     private List<String> allowedOrigins;
 
+
+    // TODO: 5 - Integrar spring-boot-starter-oauth2-client para login social
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http

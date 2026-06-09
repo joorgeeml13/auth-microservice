@@ -1,6 +1,5 @@
 package jorge.matias.auth_microservice.controller;
 
-import jorge.matias.auth_microservice.repository.AccountRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -57,7 +56,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     
-
+    // TODO: 3 - Implementar Rate limiting contra ataques (Bucket4j + Redis)
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
         @RequestBody @Valid LoginRequest request,
@@ -73,6 +72,8 @@ public class AuthController {
 
         ResponseCookie cookie = createRefreshCookie(tokens.refreshToken());
 
+
+        // TODO: 4 - HAcer comprobaciones de is2faEnabled
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new AuthResponse(tokens.accessToken(), null));
@@ -112,6 +113,7 @@ public class AuthController {
             .body(new AuthResponse(newTokens.accessToken(), null));
     }
     
+    // TODO: 3 - Crear enpoint POST /logout para meter Access Token en la blacklist
 
     private ResponseCookie createRefreshCookie(String token) {
         return ResponseCookie.from(refreshCookieName, token)

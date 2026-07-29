@@ -1,0 +1,56 @@
+name: Build and Publish to GHCR
+
+on:
+  push:
+    branches:
+      - 'release/v*' # Se ejecuta cuando subes código a una rama que empiece por release/v
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Permiso crucial para escribir en GHCR
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Cambia a 21 si tu pom.xml usa Java 21
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests # El .jar tiene que estar compilado antes del Dockerfile
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # GitHub te da este token automáticamente, cero configuración
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+            type=raw,value=latest,enable=true
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

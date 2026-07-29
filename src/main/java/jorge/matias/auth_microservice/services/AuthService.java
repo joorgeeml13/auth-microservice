@@ -44,11 +44,14 @@ public class AuthService {
         else
             finalName = "User@" + java.util.UUID.randomUUID().toString().substring(0, 8);
 
+        // TODO: 2 - Cambiar a estado PENDING_VERIFICATION
         Account account = Account.builder()
             .email(email)
             .password(passwordEncoder.encode(password))
             .name(finalName)
             .build();
+
+        // TODO: 2 - Generar token y lanzar evento para enviar email de verificacion
 
         accountRepository.save(account);
     }

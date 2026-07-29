@@ -1,6 +1,6 @@
 package jorge.matias.auth_microservice.config;
-
-import java.net.Authenticator;
+ 
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Bean;
@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import jorge.matias.auth_microservice.model.auth.AccountPrincipal;
 import jorge.matias.auth_microservice.model.entity.Account;
@@ -64,5 +66,12 @@ public class ApplicationConfig {
      @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public LocaleResolver localResolver(){
+        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        return localeResolver;
     }
 }

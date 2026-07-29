@@ -68,5 +68,6 @@ public class Account{
     @Column(name = "role")
     private List<AccountRole> roles = List.of(AccountRole.USER);
 
+    // TODO: 2 - Mapear relacion @OneToOne con la nueva entidad AccountSettings
 }
 

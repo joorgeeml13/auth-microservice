@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jorge.matias.auth_microservice.config.Constantes;
 import jorge.matias.auth_microservice.dto.request.LoginRequest;
+import jorge.matias.auth_microservice.dto.request.LogoutRequest;
 import jorge.matias.auth_microservice.dto.request.RefreshRequest;
 import jorge.matias.auth_microservice.dto.request.RegisterRequest;
 import jorge.matias.auth_microservice.dto.response.AuthResponse;
@@ -79,6 +80,16 @@ public class AuthController {
             .body(new AuthResponse(tokens.accessToken(), null));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+        @RequestBody @Valid LogoutRequest request,
+        @RequestHeader(value = "X-Device-ID", required = true) String deviceId
+    ){
+
+        authService.logout(request.refreshToken(), deviceId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refreshToken(
         @RequestHeader(value = "X-Client-Type", defaultValue = "WEB") String clientType,
@@ -112,8 +123,6 @@ public class AuthController {
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new AuthResponse(newTokens.accessToken(), null));
     }
-    
-    // TODO: 3 - Crear enpoint POST /logout para meter Access Token en la blacklist
 
     private ResponseCookie createRefreshCookie(String token) {
         return ResponseCookie.from(refreshCookieName, token)

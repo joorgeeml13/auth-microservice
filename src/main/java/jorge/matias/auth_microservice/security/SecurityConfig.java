@@ -36,7 +36,16 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authRequest -> 
                 authRequest
-                    .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                    .requestMatchers(
+                        "/auth/**",
+                        "/api/v1/auth/**",
+                        "/v3/api-docs/**",
+                        "/api/v1/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/api/v1/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/api/v1/swagger-ui.html"
+                    ).permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sessionManager -> 

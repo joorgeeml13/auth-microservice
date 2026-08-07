@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public abstract class AuthException extends RuntimeException{
+    private static final long serialVersionUID = 1L;
 
     private final String messageKey;
     private final Object[] args;

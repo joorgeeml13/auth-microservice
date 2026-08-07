@@ -8,9 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jorge.matias.auth_microservice.config.Constantes;
 import jorge.matias.auth_microservice.dto.request.LoginRequest;
+import jorge.matias.auth_microservice.dto.request.LogoutRequest;
 import jorge.matias.auth_microservice.dto.request.RefreshRequest;
 import jorge.matias.auth_microservice.dto.request.RegisterRequest;
 import jorge.matias.auth_microservice.dto.response.AuthResponse;
+import jorge.matias.auth_microservice.exceptions.MissingRefreshTokenException;
 import jorge.matias.auth_microservice.exceptions.RefreshTokenNotFoundException;
 import jorge.matias.auth_microservice.services.AuthService;
 import jorge.matias.auth_microservice.vo.TokenPair;
@@ -79,6 +81,38 @@ public class AuthController {
             .body(new AuthResponse(tokens.accessToken(), null));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+        @RequestHeader(value = "X-Client-Type", defaultValue = "WEB") String clientType,
+        @RequestHeader(value = "X-Device-ID", required = true) String deviceId,
+        @CookieValue(name = "${security.jwt.refresh-cookie-name}", required = false) String refreshTokenCookie,
+        @RequestBody(required = false) LogoutRequest request
+    ){
+        String tokenToLogout = null;
+
+        if (request != null && request.refreshToken() != null && !request.refreshToken().isBlank()) {
+            tokenToLogout = request.refreshToken();
+        } else if (refreshTokenCookie != null && !refreshTokenCookie.isBlank()) {
+            tokenToLogout = refreshTokenCookie;
+        } else {
+            throw new MissingRefreshTokenException();
+        }
+
+        authService.logout(tokenToLogout, deviceId);
+
+        ResponseCookie cleanCookie = ResponseCookie.from(refreshCookieName, "")
+                .httpOnly(true)
+                .secure(refreshCookieSecure)
+                .path(refreshPath)
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
+                .build();
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refreshToken(
         @RequestHeader(value = "X-Client-Type", defaultValue = "WEB") String clientType,
@@ -112,8 +146,6 @@ public class AuthController {
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new AuthResponse(newTokens.accessToken(), null));
     }
-    
-    // TODO: 3 - Crear enpoint POST /logout para meter Access Token en la blacklist
 
     private ResponseCookie createRefreshCookie(String token) {
         return ResponseCookie.from(refreshCookieName, token)

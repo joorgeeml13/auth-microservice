@@ -3,6 +3,7 @@ package jorge.matias.auth_microservice.exceptions;
 import org.springframework.http.HttpStatus;
 
 public class AccountAlreadyExistException extends AuthException{
+    private static final long serialVersionUID = 1L;
     public AccountAlreadyExistException(){
         super("auth.error.account_already_exist", HttpStatus.BAD_REQUEST);
     }

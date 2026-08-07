@@ -3,7 +3,6 @@ package jorge.matias.auth_microservice.services;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -89,6 +88,12 @@ public class RefreshTokenService {
     public RefreshToken findRefreshToken(String token){
         return refreshTokenRepository.findByToken(token)
             .orElseThrow(RefreshTokenNotFoundException::new);
+    }
+
+    @Transactional
+    public void revoke(RefreshToken tokenEntity){
+        tokenEntity.setRevoked(true);
+        refreshTokenRepository.save(tokenEntity);
     }
 
     @Transactional

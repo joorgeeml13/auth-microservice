@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
  * Mensaje i18n: auth.error.refresh-token-expired
  */
 public class RefreshTokenExpiredException extends AuthException {
+    private static final long serialVersionUID = 1L;
 
     public RefreshTokenExpiredException() {
         super("auth.error.refresh-token-expired", HttpStatus.UNAUTHORIZED);

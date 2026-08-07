@@ -1,6 +1,5 @@
 package jorge.matias.auth_microservice.services;
 
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import jorge.matias.auth_microservice.exceptions.AccountAlreadyExistException;
 import jorge.matias.auth_microservice.exceptions.RefreshTokenCompromisedException;
-import jorge.matias.auth_microservice.exceptions.RefreshTokenNotFoundException;
+import jorge.matias.auth_microservice.exceptions.RefreshTokenExpiredException;
 import jorge.matias.auth_microservice.exceptions.UserNotFoundException;
 import jorge.matias.auth_microservice.model.auth.AccountPrincipal;
 import jorge.matias.auth_microservice.model.entity.Account;
@@ -81,12 +80,22 @@ public class AuthService {
     public void logout(String refreshToken, String deviceId){
         RefreshToken tokenEntity = refreshTokenService.findRefreshToken(refreshToken);
 
-        if(deviceId != null && !deviceId.equals(tokenEntity.getDeviceId())){
+        if (tokenEntity.isRevoked()) {
             refreshTokenService.revokeAllTokens(tokenEntity.getAccount());
-            throw new RefreshTokenCompromisedException();
+            throw new RefreshTokenCompromisedException(deviceId);
         }
 
-        refreshTokenService.delete(tokenEntity);
+        if (tokenEntity.isExpired()) {
+            refreshTokenService.revoke(tokenEntity);
+            throw new RefreshTokenExpiredException(tokenEntity.getExpiryDate().toString());
+        }
+
+        if(deviceId != null && !deviceId.equals(tokenEntity.getDeviceId())){
+            refreshTokenService.revokeAllTokens(tokenEntity.getAccount());
+            throw new RefreshTokenCompromisedException(deviceId);
+        }
+
+        refreshTokenService.revoke(tokenEntity);
     }
 
     @Transactional

@@ -21,5 +21,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Generate temporary RSA keys for tests
+        run: |
+          mkdir -p src/main/resources/certs
+          openssl genrsa -out src/main/resources/certs/private_key.pem 2048
+          openssl rsa -in src/main/resources/certs/private_key.pem -pubout -out src/main/resources/certs/public_key.pem
+
       - name: Run Tests
         run: ./mvnw test

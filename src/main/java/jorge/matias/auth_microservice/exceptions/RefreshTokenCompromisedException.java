@@ -3,6 +3,7 @@ package jorge.matias.auth_microservice.exceptions;
 import org.springframework.http.HttpStatus;
 
 public class RefreshTokenCompromisedException extends AuthException {
+    private static final long serialVersionUID = 1L;
 
     public RefreshTokenCompromisedException() {
         super("auth.error.refresh-token-compromised", HttpStatus.UNAUTHORIZED);

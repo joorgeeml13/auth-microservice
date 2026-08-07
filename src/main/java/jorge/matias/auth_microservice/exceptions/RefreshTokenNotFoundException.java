@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 
 public class RefreshTokenNotFoundException extends AuthException {
+    private static final long serialVersionUID = 1L;
 
     public RefreshTokenNotFoundException() {
         super("auth.error.refresh-token-not-found", HttpStatus.NOT_FOUND);

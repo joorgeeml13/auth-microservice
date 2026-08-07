@@ -1,0 +1,18 @@
+# 🛑 SEGURIDAD PURA Y DURA (Que la IA no lea esto jamás)
+.env
+.env.*
+*.pem      
+secrets/
+
+# 💸 AHORRO DE TOKENS (Basura compilada y temporales)
+target/
+*.class
+*.jar
+*.war
+cp.tx      
+
+# 🗂️ RUIDO DE IDE Y SISTEMA
+.idea/
+.vscode/
+.git/
+.mvn/

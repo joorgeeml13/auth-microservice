@@ -1,9 +1,7 @@
 package jorge.matias.auth_microservice.config;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.stream.Collectors;
-
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -12,16 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jorge.matias.auth_microservice.dto.response.ApiErrorResponse;
 import jorge.matias.auth_microservice.exceptions.AuthException;
-import lombok.Locked;
 import lombok.RequiredArgsConstructor;
 
 @RestControllerAdvice
@@ -31,14 +26,14 @@ public class GlobalExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity handleAuthExcepption(
+    public ResponseEntity<ApiErrorResponse> handleAuthException(
         AuthException ex,
         HttpServletRequest request
     ){
 
         String translatedMessage = messageSource.getMessage(
                 ex.getMessageKey(), 
-                null, 
+                ex.getArgs(), 
                 "Error desconocido",
                 LocaleContextHolder.getLocale() 
         );
@@ -47,7 +42,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleValidationException(
+    public ResponseEntity<ApiErrorResponse> handleValidationException(
         MethodArgumentNotValidException ex,
         HttpServletRequest request
     ){
@@ -68,7 +63,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity handleSpringSecurityAuthException(
+    public ResponseEntity<ApiErrorResponse> handleSpringSecurityAuthException(
         AuthenticationException ex,
         HttpServletRequest request
     ){

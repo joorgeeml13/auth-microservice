@@ -69,7 +69,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public LocaleResolver localResolver(){
+    public LocaleResolver localeResolver(){
         AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
         localeResolver.setDefaultLocale(Locale.forLanguageTag("en"));
         return localeResolver;

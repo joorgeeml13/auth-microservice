@@ -38,17 +38,23 @@ public class JwtService {
 
     private PrivateKey privateKey;
     private PublicKey publicKey;
+    private String rawPublicKeyPem;
 
     private long jwtExpirationMillis;
     private long refreshExpirationMillis;
 
     @PostConstruct
     protected void init() throws Exception {
+        this.rawPublicKeyPem = new String(publicKeyResource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         this.privateKey = loadPrivateKey(privateKeyResource);
-        this.publicKey = loadPublicKey(publicKeyResource);
+        this.publicKey = parsePublicKey(this.rawPublicKeyPem);
 
         this.jwtExpirationMillis = jwtExpirationMins * 60 * 1000;
         this.refreshExpirationMillis = refreshExpirationDays * 24 * 60 * 60 * 1000;
+    }
+
+    public String getPublicKeyPem() {
+        return rawPublicKeyPem;
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -107,8 +113,7 @@ public class JwtService {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encoded));
     }
 
-    private PublicKey loadPublicKey(Resource resource) throws Exception {
-        String key = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+    private PublicKey parsePublicKey(String key) throws Exception {
         String publicKeyPEM = key
                 .replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")

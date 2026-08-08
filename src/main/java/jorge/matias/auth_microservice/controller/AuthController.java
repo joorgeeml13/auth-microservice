@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -145,6 +146,15 @@ public class AuthController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new AuthResponse(newTokens.accessToken(), null));
+    }
+
+    @GetMapping(value = "/public-key.pem", produces = "application/x-pem-file")
+    public ResponseEntity<String> getPublicKeyPem() {
+        String publicKeyPem = authService.getPublicKeyPem();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400, immutable")
+                .header("X-Content-Type-Options", "nosniff")
+                .body(publicKeyPem);
     }
 
     private ResponseCookie createRefreshCookie(String token) {

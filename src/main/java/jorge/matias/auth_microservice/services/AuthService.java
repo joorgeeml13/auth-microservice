@@ -111,6 +111,10 @@ public class AuthService {
             .build();
     }
 
+    public String getPublicKeyPem() {
+        return jwtService.getPublicKeyPem();
+    }
+
     private AccountPrincipal buildPrincipal(Account acc){
         return AccountPrincipal.builder()
             .principal(acc)
